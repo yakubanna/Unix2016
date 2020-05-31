@@ -47,11 +47,14 @@ static bool ParseRequestLine(char* line, struct THttpRequest* out) {
     }
     out->Method = strdup(method);
 
-    char* fullRequest = strtok_r(NULL, " ", &saveptr);
-    if (fullRequest == NULL) {
-        return false;
-    }
-
+    char* index = strrchr(saveptr, ' ');
+    if (index == NULL)
+      return false;
+    while(index[0] == ' ')
+      index--;
+    char fullRequest[RECV_BUF_SIZE];
+    strncpy(fullRequest, saveptr, index-saveptr+1);
+    fullRequest[index-saveptr+1] = '\0';
     SplitFullRequest(fullRequest, &out->Path, &out->QueryString);
     return true;
 }

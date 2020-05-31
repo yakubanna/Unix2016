@@ -1,5 +1,6 @@
 #include "server.h"
 
+#include <locale.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -34,6 +35,7 @@ static bool ParseOptions(int argc, char* argv[], uint16_t* port) {
 }
 
 int main (int argc, char* argv[]) {
+    setlocale(LC_ALL, "");
     uint16_t port = DEFAULT_PORT;
     if (!ParseOptions(argc, argv, &port)) {
         return EXIT_FAILURE;
