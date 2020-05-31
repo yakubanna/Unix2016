@@ -3,6 +3,7 @@
 #include "bmp.h"
 #include "stringutils.h"
 
+#include <dirent.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -58,13 +59,14 @@ static const char* INDEX_TEMPLATE_HEADER =
 "  <title>" PAGE_TITLE "</title>\n"
 "  <meta charset=\"utf-8\">\n"
 "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, shrink-to-fit=no\">\n"
-"  <link rel=\"stylesheet\" href=\"static/bootstrap.min.css\">\n"
+"  <link rel=\"stylesheet\" href=\"/static/bootstrap.min.css\">\n"
 "  <style>.pic { width: 48px; height: 48px; }</style>"
 "</head>\n"
 "<body>\n"
 "  <div class=\"container\">\n"
-"    <img src=\"static/logo_en.svg\" width=\"232\" height=\"97\" class=\"float-right\">\n"
+"    <img src=\"/static/logo_en.svg\" width=\"232\" height=\"97\" class=\"float-right\">\n"
 "    <h1>" PAGE_TITLE "</h1>\n";
+
 
 static const char* INDEX_TEMPLATE_FOOTER =
 "  </div>\n"
@@ -185,4 +187,19 @@ void SendStaticFile(struct THttpResponse* response, const char* path) {
         CreateErrorPage(response, HTTP_INTERNAL_SERVER_ERROR);
     }
     close(fd);
+}
+
+void SendStaticDirectory(struct THttpResponse* response)
+{
+    char dir[] = "static/";
+    response->ContentType = "text/html";
+    TStringBuilder_AppendCStr(&response->Body, INDEX_TEMPLATE_HEADER);
+
+    DIR* dr = opendir(dir);
+    struct dirent* walk;
+    while(walk = readdir(dr)) {
+      if (strcmp(walk->d_name, ".") != 0 && strcmp(walk->d_name, "..") != 0 )
+          TStringBuilder_Sprintf(&response->Body, "<a href = \"/%s%s\">%s</a><br/>", dir, walk->d_name, walk->d_name);
+    }
+    closedir(dr);
 }

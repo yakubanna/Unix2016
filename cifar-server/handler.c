@@ -5,6 +5,7 @@
 #include "resources.h"
 #include "stringutils.h"
 
+#include <dirent.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
@@ -47,7 +48,14 @@ static void Handle(const struct THttpRequest* request, struct THttpResponse* res
             CreateErrorPage(response, HTTP_METHOD_NOT_ALLOWED);
             return;
         }
-        SendStaticFile(response, request->Path + 1);
+        DIR* dr = opendir(request->Path + 1);
+        if (dr == NULL) {
+          SendStaticFile(response, request->Path + 1);
+        }
+        else {
+          closedir(dr);
+          SendStaticDirectory(response);
+        }
         return;
     }
 
