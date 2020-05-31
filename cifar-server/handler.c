@@ -43,6 +43,10 @@ static void Handle(const struct THttpRequest* request, struct THttpResponse* res
         }
     }
     if (StartsWith(request->Path, "/static/")) {
+        if (strstr(request->Path, "../") != NULL) {
+            CreateErrorPage(response, HTTP_METHOD_NOT_ALLOWED);
+            return;
+        }
         SendStaticFile(response, request->Path + 1);
         return;
     }
