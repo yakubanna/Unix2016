@@ -45,6 +45,7 @@ bool THttpResponse_Send(struct THttpResponse* self, int sockfd) {
         TStringBuilder_Sprintf(&headers, "Content-Type: %s" CRLF, self->ContentType);
     }
     TStringBuilder_Sprintf(&headers, "Content-Length: %zu" CRLF, contentLength);
+    TStringBuilder_Sprintf(&headers, "Modified by Hanna" CRLF);
     TStringBuilder_AppendCStr(&headers, CRLF);
 
     // fprintf(stderr, "RESPONSE {%s}\n", headers.Data);
